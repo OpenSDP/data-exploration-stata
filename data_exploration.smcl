@@ -1,0 +1,905 @@
+{smcl}
+{txt}{...}
+{pstd}{c TLC}{hline 43}{c TRC}{break}
+{bf}{...}
+{c |}{bf: OpenSDP Data Janitor{space 17}}{c |}{break}
+{c |}{bf: Data Exploration in Stata{space 20}}{c |}{break}
+{sf}{...}
+{c BLC}{hline 43}{c BRC}
+
+{pstd}{bf:Data Exploration Tutorial}{break}
+
+{pstd}The purpose of this tutorial is to 1) provide a Stata introduction for education data analysts 
+who are new to Stata, and 2) demonstrate Stata commands that are useful for data exploration. You 
+don't need to know any Stata to do this tutorial. 
+
+{pstd}This tutorial is fairly basic, so to put the material into the context of your own work, here 
+is some advice about what it takes to become proficient in Stata, the typical steps involved 
+in using Stata for an analysis project, and staying organized. Learning Stata is hard work, but 
+it can be very rewarding!
+
+{pstd}As you learn Stata, you’ll build your skills and understanding in a number of ways. If you don’t 
+have programming experience, you’ll be getting used to writing programs to tell Stata what to 
+do with your data. You’ll learn the syntax and options for various commands, and memorize the most 
+important ones. Since you’ll be summarizing and manipulating very large datasets with hundreds 
+of thousands or millions of lines, you’ll get used to keeping a picture of the data and its 
+structure in your head as you work, figuring out how different commands will affect the data, 
+and checking whether what you think you did to the data is what actually happened.
+
+{pstd}Getting first comfortable and then expert in Stata will take time. You can learn some basic 
+commands very quickly, but to learn how to unleash the full power of Stata can take three 
+to six months of steady effort. This means that to get enough practice to become proficient 
+you will probably need to use Stata in your daily work, and most of your learning will happen 
+on your own. As you grow your Stata skills, you should seek out a variety of resources to help 
+you figure out how to tackle different problems: the excellent Stata help system and PDF 
+manuals, colleagues and fellow Stata programmers, and online websites and training resources. 
+
+{pstd}For a typical analysis cycle, you will acquire data, load it into Stata, and spend some time 
+exploring it to get to know the data, assessing the data quality and uncovering problems with the data. 
+Then, you’ll use data manipulation commands to “clean” and prepare the data. You'll apply decision 
+rules to make it internally consistent, label and reformat the variables, combine and reshape 
+data from different sources, and define the new variables you need. This data wrangling phase 
+typically takes most of the time and effort in a statistical programming project. 
+
+{pstd}Once the data is prepared, you can use data exploration commands again to do descriptive analysis. 
+Depending on your comfort level with statistics and econometrics, you can call on Stata’s extensive 
+modeling and statistical repertoire to dig deeper into econometric analysis and forecasting. 
+Finally, you will probably spend significant time preparing and polishing charts to use in sharing 
+the results of your analysis. You can use Stata’s extensive library of data visualization commands 
+to prepare charts, or copy analysis results from Stata and make the charts in a different program 
+you are already familiar with such as Excel.
+
+{pstd}When you start an analysis project, you should spend some time thinking about how you will 
+organize your work. For training purposes, you can put programs and data files in a single 
+folder on your computer desktop, but eventually you will need to separate your files. One 
+suggestion is to use one folder per project, with separate subfolders for Stata programs, data, 
+and output such as tables and charts. 
+
+{pstd}Typically, you shouldn’t save over your original, or “raw” data. Instead, you can write commands 
+in a “do file” (a Stata program) to clean your data, define new variables, save the updated dataset 
+to a new file, and then run analyses. If you need to update the data later or make other changes
+you can edit the do file, re-run it, re-save the cleaned dataset, and regenerate the analyses. 
+In this way your work will be reproducible-—someone else, including you in the future, can 
+review your do file and data to recreate how an analysis was done. 
+
+{pstd}Now, on to the tutorial! It has two parts. In Part 1, you will see how to use data exploration 
+commands to inspect a student-level dataset. In Part 2, you'll get practice using data exploration 
+commands to answer simple research questions.
+
+
+{pstd}{bf:PART ONE: GETTING TO KNOW THE DATA}
+
+{pstd}When you double-clicked on this file to open it, Stata should have opened two windows--the file 
+viewer which is showing this tutorial, and the main Stata window. Arrange the two windows so that you 
+can see both of them at the same time. 
+
+{pstd}The main Stata screen has a number of sections. For our purposes, the two most important sections are 
+the command window and the results window above it.
+
+{pstd}For this part of the tutorial, you will enter Stata commands interactively. You can click on 
+commands in blue in this window to run them, or type the commands into the command window and 
+hit "Enter." 
+
+{pstd}When the tutorial asks questions about the data, find the answers by looking at the output in the 
+Stata results window, and then click on "Answer" to see if you are right.
+
+{pstd}None of the commands in this part of the tutorial make changes to the data, so if you have to leave
+the tutorial and come back to it, you don't have do redo the earlier part. Just reload the
+data by clicking on the "use" command line below, and then go to the section where you 
+left off.
+
+{pstd}First, load the data.
+
+	{stata use "delawnymous_ssy_20170813", clear}
+
+{pstd}This data file contains information about fictitious students in the state of Delawnymous. None 
+of the students in the data actually exist, but the relationships in the data are based on those 
+in a real student data file. This data has already been cleaned-—that is, the data is not the same 
+as the raw source data from the Delawnymous longitudinal data system. Inconsistencies and obvious 
+data errors have been fixed, and the variables and values have been renamed and labeled. 
+
+{pstd}If you haven’t used Stata much before, it will probably be helpful for you to look at the 
+actual data first, to see how it is stored in Stata. Type browse in the command window or click browse
+below, and then scroll left and right and up and down through the data to see the information stored as 
+variables (columns) and records or observations (rows). Close the browser window when you are done 
+by clicking on the X in the upper right hand corner.
+
+	{stata browse}
+
+{pstd}This file is a panel dataset. There is one row per student per school year. Thus the file has two 
+key variables: student id, or sid, and school_year.
+
+{pstd}The first step in exploring the data is confirming that the data does in fact have exactly 
+one record per student per year. The isid command does this. If the variables you list after the 
+command are not the key variables, Stata will respond with an error message. Otherwise, Stata will 
+do nothing.
+
+	{stata isid sid}
+	{stata isid sid school_year}  
+
+{pstd}Next, let’s look at a list of the variables in the dataset.
+
+	{stata describe}
+
+{pstd}Question: According to the output of the describe command, how many records (aka observations, 
+or rows) are there in the dataset?
+
+	{stata display "There are 759,520 observations, as shown in the second line of the output.":Answer}
+
+{pstd}You can see that there are 23 variables in the dataset. The left-hand column 
+gives variable names, and the right-most column gives variable descriptions, or labels. The 
+second column shows the type of variable. There 22 numeric variables of different types:
+float (real numbers, with about 7 significant digits); int (integers); byte (single digits); and 
+double (higher-precision real numbers). There is one text, or string variable with type str9,
+meaning that it is 9 characters long.
+
+{pstd}In addition to student ID and school year, the dataset contains student demographic data, school 
+information, grade level, attendance data, test scores, and high school graduation information.
+
+{pstd}The isid command confirms the structure of the data, and the browse and describe commands give
+an overview of the dataset. Next, it’s time to start looking at individual variables. As you look at 
+each variable in a new dataset for the first time, these are some of the questions to consider:
+
+{pstd}What type of variable is it? 
+
+	Is it text or numeric?
+	
+	Is it a continuous variable (able to take many numeric values), or is it a categorical variable 
+	(limited to a smaller number of possible values representing specific categories)? 
+
+	If it is a categorical variable, is it stored as a text string, or is it numeric? Does it have labels 
+	that explain the categories?
+
+	Is it a date or time variable? 
+
+	Or, is it a long text description that can take any number of values? 
+	
+	It is a binary variable (often referred to as a "dummy," indicator, or logical variable) which takes 
+	only two values, such as 1 or 0, typically interpreted as true/false or yes/no?
+
+{pstd}What is the distribution of the variable? 
+
+	If it is a categorical variable, what share of observations fall in each category?
+
+	If it is numeric, what are the maximum, minimum, average, standard deviation, median, and 25th 
+	and 75th percentile values?
+
+{pstd}Can you identify any problems with the variable? 
+
+	Are there any missing values?
+
+	Does it look like there are outliers (a few values that are unusually high or low)? 
+	
+	Are there any impossible values? 
+	
+	Are there variables which are formatted incorrectly—-for example, dates or numbers stored 
+	as strings?
+
+{pstd}One of the most useful commands when you are in the “getting to know the data” phase is the codebook 
+command. This command answers many of the questions above all at once. You can use it to find out 
+information about just one variable:
+
+	{stata codebook school_year}
+
+{pstd}Or you can look at several variables, or all the variables in the dataset. For most Stata commands, 
+you can use the wildcard characters ? (matching any one character) or * (matching any number of 
+characters) to tell Stata to match several variable names at once.
+
+	{stata codebook sat*}
+
+{pstd}Question: What are the average and 25th percentile fo SAT math scores for the records in the data 
+which have SAT scores?
+
+	{stata display "The average is 462.281. The 25th percentile is 390.":Answer}
+
+{pstd}Go ahead and look through the entire list of variables using the codebook command. The results 
+window will display one page at a time. Press the space bar to advance. After all the results have 
+been displayed, you can scroll up and down through the results window to review the output. Review 
+the output, keeping the questions above in mind.
+
+	{stata codebook}
+
+{pstd}If you don’t want to have to keep pressing the space bar, you can tell Stata to turn off 
+the results pagination feature:
+
+	{stata set more off}
+
+{pstd}Question: How many values are there for s_frpl?"
+
+	{stata display "There are three values, 0, 1, and 2, labeled Does Not Qualify, Reduced Lunch, and Free Lunch respectively.":Answer}
+
+{pstd}Question: What is the relationship between missing values for hs_diploma_year and the hs_diploma
+variable?
+
+	{stata display "Based on the counts, it seems likely that all of the records with a value of 0 for the hs_diploma variable have hs_diploma_year missing.":Answer}
+
+{pstd}Question: Can you identify some binary "dummy" or indicator variables?
+
+	{stata display "s_male, s_frpl, s_ell, s_iep, hs_diploma, sch_high, sch_charter, sch_alternative, and sch_vocational are all dummy variables.":Answer}
+
+{pstd}When you get a new dataset, it's a good idea to run the codebook command to get an overview of 
+the data. After that, you should inspect some of the most important variables one or a few at a time. 
+This dataset has a relatively small number of variables, so we'll be able to look at all of them.
+For initial data inspection, the tabulate command (which can be shortened to tab) is the most useful 
+command for categorical variables. The summarize and histogram commands are most useful for continuous 
+variables.
+
+{pstd}The tab command gives you several pieces of information: the different values of a categorical 
+variable, the number of records which have each value, and the percentage of records with 
+each value.
+
+	{stata tab s_male}
+	{stata tab s_birth_year}
+	{stata tab s_race}
+	{stata tab s_frpl}
+
+{pstd}By default, Stata excludes missing values when it tabulates a variable. You can tell this 
+because the total number of records shown is lower than the total number of records in the 
+dataset. You can verify the total number of records in the dataset with the count command:
+
+	{stata count}
+
+{pstd}To make Stata show the records with missing values, use the tab command with the missing option.
+Stata uses the period (.) symbol to indicate missing numeric values and an empty string ("") to 
+indicate missing text values.
+
+	{stata tab s_frpl, missing}
+
+{pstd}You can abbreviate the option to m or mi. (Almost all Stata commands and options can be abbreviated 
+to the fewest number of letters that make them unique.) It’s good practice to always use the missing 
+option when you’re exploring data unless you specifically want to know the percentages of records in 
+different categories excluding the missing records. Go ahead and look at the distributions of the 
+rest of the categorical variables:
+
+	{stata tab s_ell, mi}
+	{stata tab s_iep, mi}
+	{stata tab s_grade_level, mi}
+	{stata tab hs_diploma, mi}
+	{stata tab hs_diploma_year, mi}
+	{stata tab sch_charter, mi}
+	{stata tab sch_alternative, mi}
+	{stata tab sch_vocational, mi}
+
+{pstd}Question: What share of records are missing grade level?
+
+	{stata display "About 2 percent, or about 17 thousand records are missing grade level.":Answer}
+
+{pstd}Question: Are there any other variables which have the same missingness pattern?
+
+	{stata display "s_frpl, s_ell, s_iep, and s_days_suspended have the same number of missing records as s_grade_level.":Answer}
+
+{pstd}Question: What share of students have an Individualized Education Plan?
+
+	{stata display "At least 14.85 percent of students have an IEP. There are 2.29 percent of students for which IEP status is unknown.":Answer}
+
+{pstd}Note that you can type commands directly in the command window. Type the following and then hit enter.
+
+	{stata tab s_iep}
+
+{pstd}This gives the percentage of students (15.2 percent) with an IEP, out of only those students with known IEP status.
+
+{pstd}You'll notice that some of variables were listed as numeric by the describe and codebook 
+commands, but the tab command lists the categories as text. That's because "value labels" have
+been applied to the variables. You can use the nolabel option to see the underlying numeric codes.
+
+	{stata describe s_race}
+	{stata tab s_race, missing}
+	{stata tab s_race, missing nolabel}
+	
+{pstd}Tab can also be useful for comparing the joint distributions of two variables. The resulting tables 
+are often referred to as crosstabs. Since you’ll be doing this a lot in the hands-on exercise for the 
+fall workshop, it’s worth taking the time to make sure that you are comfortable with making and 
+interpreting crosstabs.
+
+{pstd} When you ask Stata to tab two variables, Stata generates a table with the first variable's
+categories in the rows of the table, and the second variable's categories in the columns. The
+cells in the table give the total number of records which fall into each combined category.
+
+	{stata tab s_race sch_charter, mi}
+
+{pstd}First look at the totals in the bottom row and right-most column. Confirm that they match the 
+counts from the single-variable tabs for race and charter school status.
+
+	{stata tab s_race, mi}
+	{stata tab sch_charter, mi}
+
+{pstd}Question: How many records in the dataset are for Black students attending charter schools?
+
+	{stata display "20,586":Answer}
+
+{pstd}For two-way tabulations, Stata does not automatically provide percentages. This makes it harder to
+see if the racial and ethnic distribution for charter school students is different from the rest of 
+the school population. Stata has several options to customize percentages for two-way tabs, 
+including column percentages (col), row percentages (row), and cell percentages (cell). You can also 
+suppress the display of record counts using the nofreq option.
+
+	{stata tab s_race sch_charter, col mi}
+	{stata tab s_race sch_charter, col nofreq mi}
+
+{pstd}Here we see for the school years in the dataset, of students not attending charters, 32 percent 
+are Black; and of students attending charters, 41 percent are Black.
+
+{pstd}Question: Are Hispanic student relatively more or less likely to attend charter schools?
+
+	{stata display "Hispanic students make up 11.7 percent of the student population, but only 6.6 percent of charter students, so they are relatively less likely to attend charter schools.":Answer}
+
+{pstd}Now, look at the same data using row percentages.
+
+	{stata tab s_race sch_charter, row mi}
+
+{pstd}Question: How would you interpret the percentages for Black students compared to all students?
+
+	{stata display "Overall, 6.6 percent of students attend charter schools, while 8.4 percent of Black students attend charter schools.":Answer}
+
+{pstd}Now, look at the same data using cell percentages.
+
+	{stata tab s_race sch_charter, cell mi}
+
+{pstd}Question: Explain the figure 2.71 in the second row.
+
+	{stata display "Black students attending charter school make up 2.7 percent of the student population.":Answer}
+
+{pstd}One problem with these tabulations is that they pool data from six school years. This improves
+sample size but it means that the data is less current. If you want to restrict the tabulation
+to the most recent year, you can use the if syntax.
+
+	{stata tab s_race sch_charter if school_year == 2016, mi col}
+
+{pstd}Note that the if statement goes after the list of variable names but before the comma that 
+separates the command from the command options. Also note that Stata uses a double equals
+sign to indicate equality. Almost every Stata command can be restricted using an if statement
+in this way.
+
+{pstd}For example, let's look at high school graduates. First, verify that diploma year is missing
+for non-graduates.
+
+	{stata tab hs_diploma_year hs_diploma, mi}
+
+{pstd}You can see that all the non-graduates had a high-school graduation year of ., or missing. 
+Crosstabbing two related variables to see if they are consistent with one another is a
+common data inspection chore. Next, let's use the if syntax to look at graduates across 
+school years.
+
+{pstd}To get a better idea of how the data is structured, first sort it by student ID and school year,
+and then browse just the records for students who graduated.
+
+	{stata sort sid school_year}
+	{stata browse if hs_diploma == 1}
+
+{pstd}You can browse just the variables of interest to make the data easier to inspect.
+
+	{stata browse sid school_year hs_diploma hs_diploma_year if hs_diploma == 1}
+
+{pstd}It looks like the high school diploma year is the last school year for each graduate 
+in the dataset. Armed with this understanding, let's count the number of graduates each year.
+
+	{stata tab school_year if hs_diploma_year == school_year, mi}
+
+{pstd}In general, when you are first exploring an education dataset that is in panel format, 
+with an id variable (for example, students, schools, or teachers) and a time variable (usually 
+school years), it’s a good idea to inspect the data by crosstabbing important variables by time 
+and place: school year and a geographic variable like school or district. This can help reveal 
+patterns in the data and possibly surface problems with data coverage and consistency.
+
+{pstd}Start by looking at school enrollment across years. Note that you should put 
+variables with large numbers of categories first in a tab command.
+
+	{stata tab school_code school_year, mi}
+
+{pstd}Question: What happened to schools 166 and 219?
+
+	{stata display "It looks like 166 started reporting data in 2014, and 219 stopped reporting data in 2013. This is likely due to school openings and closings, but there might be other reasons such as reorganization of school codes or errors in data reporting.":Answer}
+
+{pstd}Look at school year and grade level.}
+
+	{stata tab s_grade_level school_year, mi}
+
+{pstd}Questions: Did the number of students in Pre-K increase over time, or did recordkeeping improve?
+Is the large number of ninth graders due to a retention policy?
+
+	{stata display "We don't know.":Answer}
+
+{pstd}Look at days absent and suspended.
+
+	{stata tab s_days_absent school_year, mi}
+	{stata tab s_days_suspended school_year, mi}
+
+{pstd}Do you see any issues?
+
+	{stata display "There is no absence data for 2011 and 2012.":Answer}
+
+{pstd} Check other variables quickly, and see if everything is as you expect.
+
+	{stata tab school_year s_male, mi row}
+	{stata tab s_birth_year school_year, mi}
+	{stata tab school_year s_race, mi row}
+	{stata tab school_year s_frpl, mi row}
+	{stata tab school_year s_ell, mi row}
+	{stata tab school_year s_iep, mi row}
+	{stata tab school_year sch_charter, mi row}
+	{stata tab school_year sch_alternative, mi row}
+	{stata tab school_year sch_vocational, mi row}
+
+{pstd}Question: what happened to missingness over time?
+
+	{stata display "The most recent two years have fewer missing values for s_grade_level, s_frpl, s_ell, and s_iep.":Answer}
+
+{pstd}Question: did any variables change noticeably over time?
+
+	{stata display "The share of student receiving free lunch increased from 30 percent in 2011 to 43 percent in 2016. The share of Hispanic and multiracial students increased slightly.":Answer}
+
+{pstd}Finally, check the distribution of a few variables by school type or school code.
+
+	{stata tab s_iep sch_alternative, mi col}
+	{stata tab s_frpl sch_charter, mi col}
+	{stata tab s_frpl sch_vocational, mi col}
+	{stata tab school_code s_frpl, mi row}
+
+{pstd}Now that you have a good idea of how the categorical variables are distributed, let’s look 
+at the continuous variables. There are several in the dataset: math and ELA test scores, SAT 
+math, verbal, and writing scores, and days absent and suspended. Except for the math and ELA scores,
+these aren’t technically continuous variables, since they have a limited number of integer values, 
+but they have enough values that it’s easiest to explore them using commands for numerical 
+variables.
+
+{pstd}The summarize command gives the mean, standard deviation, minimum and maximum for numeric 
+variables.
+
+	{stata summ s_days* std* sat*}
+
+{pstd}Note that since dummy variables are either 0 or 1, the average value is the same as the share for 
+which the condition is true.
+
+	{stata tab s_iep}
+	{stata summ s_iep}
+
+{pstd}With the detail option, the summarize command gives considerably more information.
+
+	{stata summ s_days* std* sat*, detail}
+
+{pstd}For test scores, histograms are usually the best way to review distributions. You can use the 
+by option to look at multiple groups using the same scale, and the frequency option to make sure 
+that small numbers of scores aren't given too much weight. It's usually a good idea to examine scores 
+separately by year and grade. You might need to expand the charts to full screen to inspect them.
+
+	{stata hist std_scaled_m}
+	{stata hist std_scaled_m, by(school_year) freq}
+	{stata hist std_scaled_m, by(s_grade_level) freq}
+	{stata hist std_scaled_m, by(s_grade_level school_year) freq}
+
+{pstd}Question: When did the state stop administering math tests to second graders?
+
+	{stata display "2015":Answer}
+
+{pstd}Most Stata graphing commands have a plethora of options, and histogram is not an exception. To
+learn the syntax and the options for any command, you can go to the help page for that command.
+
+	{stata help histogram}
+
+{pstd}If you click on the name of the command in the help page, Stata will take you to the PDF manual 
+entry for the command, which often has additional information and examples.
+
+{pstd}Review the overall distributions for the ELA scores. In this case we'll skip the grade-by-year 
+plot since the data has already been reviewed during data cleaning.
+
+	{stata hist std_scaled_e}
+	{stata hist std_scaled_e, by(school_year) freq}
+	{stata hist std_scaled_e, by(s_grade_level) freq}
+
+{pstd}Before looking at the histogram of SAT scores, check the coverage across years. One way to
+do this is to use the bysort prefix with the summarize command.
+
+	{stata "bysort school_year: summ sat_math_score"}
+	{stata "bysort s_grade_level: summ sat_math_score"}
+
+{pstd}You can use the bysort prefix with many Stata commands. The fact that the number of observations 
+decreases in the most recent years, and that there are values for many grade levels, makes it seem 
+likely that the data is not structured so that SAT scores appear only in the testing year. Browse 
+the data to verify this.
+
+	{stata sort sid school_year}
+	{stata browse sid school_year s_grade_level sat*}
+
+{pstd}It appears that for any students who took the SAT anywhere in 2011-2016, the score appears in all 
+years the student is in the data. Examine the SAT score prevalence just for 12th graders across time.
+
+	{stata bysort school_year: summ sat_math_score if s_grade_level == 12}
+
+{pstd}Question: What pattern do you see?
+
+	{stata display "In 2015 and especially in 2016, the number of 12th graders with SAT scores increased, and the average SAT math score decreased.":Answer}
+
+{pstd}For completeness, check the distribution by year for 12th graders. Use the width option to make the 
+bars line up with actual SAT scores.
+
+	{stata hist sat_math_score if s_grade_level == 12, by(school_year) width(10) freq}
+	{stata hist sat_verbal_score if s_grade_level == 12, by(school_year) width(10) freq}
+	{stata hist sat_writing_score if s_grade_level == 12, by(school_year) width(10) freq}
+
+{pstd}If you want to compare the distributions of two continuous variables, you can make a scatter
+chart, or use the correlation command.
+
+	{stata scatter std_scaled_m std_scaled_e}
+	{stata corr std_scaled_m std_scaled_e}
+
+{pstd}Correlation measures the strength of the linear relationship between two variables, and it 
+varies from -1 to 1. Two variables with zero correlation have no relationship, while variables 
+that are identical have a correlation of 1. Variables that are negatively correlated 
+(as one tends to increase, the other tends to decrease) have a correlation less than zero.
+
+	{stata corr std_scaled_m std_scaled_m}
+	{stata corr s_days_absent std_scaled_m}
+
+{pstd}You can also make a correlation table of multiple variables, including dummy variables. Check
+to see that the signs and strengths of the correlations are what you expect.
+
+	{stata corr std* sat* s_days* s_ell s_iep hs_diploma}
+
+{pstd}For comparing the distributions of categorical and continuous variables, there are several 
+options. One of the most compact is to use the table command. Without options, the table
+command works much like the tab command.
+
+	{stata table school_year sch_vocational}
+
+{pstd}However, you can use the table command to specify the statistics you want in the table cells.
+This is the syntax for checking the average 8th grade math score by free/reduced lunch status. In
+the parenthetical contents (abbreviated to c) list, put the name of each statistic you want, followed 
+by the name of a variable. You can see other contents options on the *table* help page.
+
+	{stata table s_frpl if s_grade_level == 8, c(mean std_scaled_m mean std_scaled_e)}
+
+{pstd}Question: what is the average math score for students receiving free in lunch in 
+8th grade?
+
+	{stata display "-0.32 standard deviations":Answer}
+
+{pstd}Note that these test scores have been standardized to have an average of 0 and a standard 
+deviation of 1.
+
+{pstd}You can also examine categorical and continuous variables together using box plots. Unlike the 
+histogram and scatter commands, you have to put the word graph before the box command. You can 
+use the by option to specify the categorical variable you want use to divide the data.
+
+	{stata graph box std_scaled_e if s_grade_level == 8, by(s_ell)}
+
+{pstd}Here you can see that English language learners have a lower median 8th grade ELA score than
+other students.
+
+{pstd}Box plots are rarely seen in the popular press, but they are beloved of statisticians because 
+they summarize a great deal of information in a single graph. The gray box shows the interquartile 
+range, from the 25th to the 75th percentile, with the line in the middle showing the median 
+value in the data. The shorter horizontal line "whiskers" are each located at a distance from 
+the box that is 1.5 times the interquartile range. The points above and below the whiskers 
+are potential outliers.
+
+{pstd}Before finishing this part of the tutorial and moving on to asking questions using the data, 
+there are two more syntactical issues in Stata you should be aware of. First, it's possible to 
+make complicated sample restrictions using the if statement with and (&) and or (|). The vertical
+pipe symbol (|) that Stata uses for or is located above the backslash on the keyboard. You can
+use parentheses to make the precedence of the operators clear if necessary.
+
+	{stata table s_male if s_grade_level == 7 & (school_year == 2015 | school_year == 2016), c(median s_days_absent)}
+
+{pstd}You can also use != or ~= as comparison operators that mean "not equals." The tilde key (~) is on 
+the upper right hand corner of the keyboard.
+
+	{stata table s_grade_level s_male if school_year ~= 2011 & school_year ~= 2012, c(median s_days_absent)}
+
+{pstd}Question: Explain what this table shows.
+
+	{stata display "This table shows the median number of days absent by grade and gender for students in the 2013, 2014, 2015, and 2016 school years.":Answer}
+
+{pstd}The second thing to note is a quirk of the numeric missing symbol. In comparison expressions,
+Stata treats missing as the largest positive number it can record. This means you sometimes need to
+explicitly exclude missing values when you use comparison operators. Suppose you want to know the 
+size of the high school student population in 2016.
+
+	{stata count if s_grade_level >= 9 & school_year == 2016}
+	{stata count if s_grade_level >= 9 & s_grade_level ~= . & school_year == 2016}
+
+{pstd}Because Stata treats . as a very large number, the first command counts students with missing
+grade levels, and the second command does not.
+
+
+{pstd}{bf:PART 2: USING THE DATA TO ASK QUESTIONS}
+
+{pstd}Now that you’ve finished the “getting to know the data” phase, you can start to ask interesting 
+questions! For this part of the tutorial, you'll enter most commands directly into the Stata window.
+You can check your work by clicking "Answer" after you've tried each command.
+
+{pstd}In this part you won't be trying to check on characteristics of variables in the dataset; you want
+to ask questions about specific groups of students. Here are some steps to think through when you are 
+writing exploratory Stata commands to do descriptive analysis:
+
+	What is the specific research question that I am interested in? This determines the choice of 
+	variables. You can use your knowledge from the data inspection phase to map research questions
+	to variables.
+
+	How should I restrict my data to be sure that I'm using the right observations? This determines 
+	the "if" part of the Stata command.
+
+	How should I show the results? This determines the Stata command and options you choose. Sometimes
+	it can take some experimenting to get your output to look exactly the way you want it to.
+
+{pstd}We'll start by asking questions about achievement gaps in math for different student subgroups. 
+Then, we'll inquire into high school graduation outcomes by subgroup. These questions can be answered 
+using the table and tab commands. Finally, we'll try to determine which factors are associated with 
+graduating on-time in four years, using linear and logistic regression commands.
+
+{pstd}A note about regression: if you have taken at least a one-semester class in statistics 
+and econometrics, you are probably already familiar with some of the theory behind linear and 
+logistic regression. Regression analysis is important in education research for describing 
+data, developing predictive models, and evaluating the impact of programs. If you haven't learned 
+these methods in an academic setting, though, you may not feel comfortable applying them in your own 
+work, and teaching you everything you need to know about regression is outside the scope of this
+tutorial. However, this tutorial does end with a demonstration of regression commands to 
+provide some exposure to how they work and how to interpret regression output.
+
+{pstd}In case you're just coming back to the tutorial, you can start by reloading the data.
+
+	{stata use "delawnymous_ssy_20170813", clear}
+
+{pstd} Let's begin by restricting the sample to our student group of interest. 
+Think carefully about which years of data you should use to explore high school 
+graduation. By eleventh or twelfth grade, many students who won't go on to graduate 
+will have left school already. Typically graduation rates are calculated for 
+cohorts of ninth graders. The latest year in the data is 2016, and graduates 
+in that year would have been ninth graders in 2013. Graduates in 2015 would 
+have been ninth graders in 2012. We can calculate four-year graduation rates for
+students in 2013, and five-year graduation rates for students in 2012. However, 
+we are missing absence data for 2012. Let's use ninth graders in 2013 to examine 
+both achievement disparities by subgroup and disparities in graduation rates. 
+(For this exercise, we will ignore students who transfer in or out of the state 
+after ninth grade.)
+
+	{stata summarize std_scaled_m if s_grade_level == 9 & school_year == 2013}
+
+{pstd}Note that the average score is very close to zero, and the standard 
+deviation is very close to 1. This is a typical way of standardizing assessment 
+scores to aide in statistical modeling and interpretation.
+
+{pstd}Next, let's begin by looking descriptively at achievement disparities. A good 
+practice is to look at means and variances of achievement scores by key demographic 
+indicators to get a sense of scale and proportion for disparities and inform 
+further analysis. First, how different are math scores by gender? You can use 
+the table command with the contents option to answer this. Type the command into the
+Stata command window and hit enter, before you click on "Answer" below.
+
+	{stata table s_male if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+	
+{pstd}There is often more than one way to get the same information in Stata. Try 
+answering the same question using the bysort: prefix with the summarize command.
+
+	{stata "bysort s_male: summ std_scaled_m if s_grade_level == 9 & school_year == 2013":Answer}
+
+{pstd}Next, how do math scores vary for these students by race/ethnicity? 
+Stata hint: In the command window, you can save typing by using the page up key 
+to bring up previous commands and edit them.
+
+	{stata table s_race if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}How do math scores vary by free lunch status?
+
+	{stata table s_frpl if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}Another good step is to also investigate how key student characteristics vary by 
+each other, as we saw in Part One. How does free lunch status vary by race for 
+these students? Use the tab command.
+
+	{stata tab s_race s_frpl if s_grade_level == 9 & school_year == 2013, mi row:Answer}
+
+{pstd}How do ninth grade math scores vary by English Language Learner status?
+
+	{stata table s_ell if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}How do ninth grade math scores vary by special education status?
+
+	{stata table s_iep if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}We should also look at disparities by school-level factors. Use the table 
+command to look at math scores by school type. First, what is the average math score for charter
+students?
+
+	{stata table sch_charter if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}Vocational students?
+
+	{stata table sch_vocational if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}Alternative school students?
+
+	{stata table sch_alternative if s_grade_level == 9 & school_year == 2013, c(mean std_scaled_m):Answer}
+
+{pstd}How do ninth grade math scores vary by attendance? You can use the table command, or you can make 
+a scatterplot. First use the table command. 
+
+	{stata table s_days_absent if s_grade_level == 9 & school_year == 2013, c(freq mean std_scaled_m):Answer}
+
+{pstd}You can add the freq keyword to the contents list (with no variable name after it) 
+so that you can see both the numbers of observations and the average math scores 
+for each category. Try that.
+
+	{stata table s_days_absent if s_grade_level == 9 & school_year == 2013, c(freq mean std_scaled_m):Answer}
+
+{pstd}Next, make a scatterplot.
+
+	{stata scatter std_scaled_m s_days_absent if s_grade_level == 9 & school_year == 2013:Answer}
+
+{pstd}As is typical with student-level education data, there are so many data points that they cover 
+each other up, but it does look as if test scores tend to be lower for students with more absences,
+as expected. You can add a fitted line to see the relationship more clearly.
+
+	{stata scatter std_scaled_m s_days_absent if s_grade_level == 9 & school_year == 2013 || lfit std_scaled_m s_days_absent if s_grade_level == 9 & school_year == 2013}
+
+{pstd}The scatterplot and the fitted line are actually two graphs. The || symbol (double
+pipe) tells Stata to show them together using the same axes. The fitted line is a regression line
+which Stata chooses by minimizing the sum of the squared vertical distances between the line and each 
+of the data points.
+
+{pstd}Next, let's turn our attention to high school graduation as an outcome. We have 
+seen the magnitude of disparities that exist by student and school factors in math scores, so it is 
+logical to look at the relationship between math scores and high school graduation.
+
+{pstd}What is the average ninth grade math score for graduates and non-graduates? Use the table 
+command.
+
+	{stata table hs_diploma if school_year == 2013 & s_grade_level == 9, c(mean std_scaled_m):Answer}
+
+{pstd}The disparity in math scores between graduates and non-graduates suggests the 
+two variables are strongly related. At this point, you should look at the 
+relationship between graduation and student and school characteristics following 
+the same process as we did above for math scores.
+
+{pstd}Another way to approach this is to construct a correlation table to look at 
+these relationship simultaneously. A correlation table is another way to quantify 
+the strength of the linear relationship between high school graduation 
+and other numeric variables (including dummy variables). The correlation table will 
+show the the correlations for every pair of variables you give it, which allows you 
+to compare correlations with your outcome, but also among key factors such as 
+race/ethnicity and days suspended or absent.
+
+{pstd}You should exclude s_frpl and s_race, since these are categorical variables with more 
+than two categories. (Note that it's possible to redefine these variables as a series of 
+dummy variables--for example, to define a separate 0/1 variable for each race/ethnicity
+category--but we haven't done that.) You should also exclude SAT scores, since there are large 
+numbers of missing values in 2013, and because the SAT is usually taken in 11th or 12th grades. 
+The corr command will drop observations with any missing values.
+
+	{stata corr hs_diploma s_male s_ell s_iep s_days_* std_scaled_* sch_* s_birth_year if school_year == 2013 & s_grade_level == 9}
+
+{pstd}Looking just at the first (hs_diploma) column, you can see that high school 
+graduation is most strongly correlated (or negatively correlated) with ninth 
+grade absences, not being an older student, test scores, suspensions, and 
+attending a vocational school. Based on the crosstabs, we know that 
+free lunch status and race/ethnicity are also strongly related to graduation outcomes.
+
+{pstd}You can see that many of these variables are correlated with one another--they vary together. 
+Given that students with higher absences also tend to have lower test scores, what is the difference 
+in the probability of graduation associated with having higher test scores for students with 
+the same number of absences? What is the difference in the probability of graduation associated 
+with more days of absence for students who have the same test scores? We can use regression 
+commands to tease out and quantify these differences.
+
+{pstd}With our data, we can't develop a model that shows that higher absences or 
+lower test scores in ninth grade cause non-graduation, because higher absences 
+and lower test scores could be related to another unobserved factor that is 
+actually causing students to drop out. But, we can use a regression model to 
+better understand the associations in the data and estimate the probability of 
+dropping out.
+
+{pstd}To get a feel for how regression works, let's look at a simple example with 
+hs_diploma as the outcome (dependent) variable, and s_male as a single 
+predictor (independent) variable. Here is the Stata syntax for a linear regression:
+
+	{stata regress hs_diploma s_male if s_grade_level == 9 & school_year == 2013, robust}
+
+{pstd}Compare this with the output from a tab command:
+
+	{stata tab hs_diploma s_male if s_grade_level == 9 & school_year == 2013, row}
+
+{pstd}Look particularly at three numbers in the regression output.
+
+	The coefficient (the number under Coef. next to s_male) estimates the linear relationship 
+	between being male (the independent variable) and graduating from high school (the dependent 
+	variable).
+	
+	The p-value (under P>|t|) is a measure of the statistical significance of the relationship. It 
+	gives the probability of seeing the coefficient by chance if there were actually no relationship 
+	between s_male and hs_diploma. 
+
+	The R-squared value gives the share of the variation in hs_diploma that is explained 
+	by the independent variables (in this case, just s_male) in the regression.
+
+{pstd}The coefficient is actually the slope of a fitted line for a graph with the 
+independent variable on the x axis and the dependent variable on the y axis. 
+(The _cons value is the intercept of the line.) Remembering that the slope of a 
+line is rise over run, you can interpret the coefficient of a univariate linear 
+regression in this way: "Every one-unit change in the independent variable is 
+associated with an estimated change in the dependent variable equal to the coefficient."
+
+{pstd}This makes more sense when the y variable is a continuous variable rather than a dummy variable, 
+but it is still a valid interpretation for this model. Since s_male is a dummy variable, a one unit 
+increase from 0 to 1 is the same as the difference between being not male and male. hs_diploma can 
+only take on the values of 0 or 1, but we can interpret the coefficient as an estimated change in 
+the probability of graduation. Thus another way to state the interpretation is that being male is 
+associated with a 5.1 percent decrease in the probability of graduation. In fact, if you look at 
+the results of the crosstab above, you will see that this is exactly the difference in graduation 
+rates for male and female students in our sample.
+
+{pstd}Because the p-value is very small (less than or equal to 0.000), the relationship between gender 
+and high school graduation is highly statistically significant.
+
+{pstd}On the other hand, according to the R-squared value, gender alone explains 
+only three-tenths of a percent of the total variation in high school graduation. 
+Clearly other factors are also at work.
+
+{pstd}To better understand what factors influence graduation, let's look at a 
+multivariate regression which includes multiple student characteristics that
+we think are strongly related to related to high school graduation, based on our 
+data exploration and our knowledge of education.
+
+{pstd}Note the use of the i. prefix for s_frpl and s_race. It instructs Stata to convert those 
+categorical variables into a series of dummy variables for use in the regression.
+
+	{stata regress hs_diploma s_days_* i.s_frpl s_iep i.s_race std_scaled_* s_birth_year s_male sch_vocational if s_grade_level == 9 & school_year == 2013, robust}
+
+{pstd}You can see a number of interesting things about this regression. For example, 
+with the other control variables included, race is not a significant predictor 
+of graduation in our data. The p-values are larger than .05, a typical threshold 
+for statistical significance. 
+
+{pstd}All of the other variables are statistically significant, except for being 
+eligible for reduced price lunch. 
+
+{pstd}Stata automatically omitted dummy variables for Black and for full-priced 
+lunch. These are the base cases that the other dummy variables in those categories 
+measure change against. So, for example, being eligible for free lunch is 
+associated with an estimated 6.1 percent decrease in the probability of graduation 
+compared with paying full price for lunch.
+
+{pstd}Because this is a multivariate model, you need to assume that all other variables are held 
+constant when you are interpreting the coefficient. For example, a one-standard-deviation increase 
+in ninth grade math score is associated with an estimated 3.6 percent increase in graduation 
+probability, holding all other variables constant.
+
+{pstd}After you have run a regression, you can have Stata calculate the fitted results for each data 
+point and store them in a new variable.
+
+	{stata predict grad_prob if school_year == 2013 & s_grade_level == 9}
+
+{pstd}You can look at the distribution of the fitted probabilities from the regression model and 
+compare them to actual graduation outcomes.
+
+	{stata hist grad_prob, by(hs_diploma) freq}
+
+{pstd}If we use a .5 cutoff for the fitted probabilities to predict graduation, it looks as if the 
+linear model did a good job of predicting graduates, but also had a number of "false positives"
+among non-graduates.
+
+{pstd}Because linear models can predict probabilities greater than one or less than zero, when the 
+dependent variable is a dummy variable, as in this case, analysts often prefer to use a generalized 
+linear model which constrains the fitted values to fit a specific distribution. Logistic 
+regression is the most common example of this type of model. It restricts the fitted values to being 
+between 0 and 1, and is suitable for analyzing outcome data where there are only two possible 
+outcomes. Here is a generalized linear model (GLM) "logistic" regression using the 
+logit command:
+
+	{stata logit hs_diploma s_days_* i.s_frpl s_iep std_scaled_* s_birth_year s_male sch_vocational if s_grade_level == 9 & school_year == 2013}
+
+{pstd}Unlike a linear model, the coefficients in the output for a logistic regression can't be 
+interpreted in a straightforward way (to learn more, read about logistic regressions and about using
+the margins command in Stata). However, you can review the statistical significance of each variable, 
+and the pseudo-R2 value is analogous to, though not the same as, R-squared in a linear regression model. 
+You can also use the predict command to generate fitted values and make predictions.
+
+	{stata predict grad_prob_logit if school_year == 2013 & s_grade_level == 9}
+	{stata hist grad_prob_logit, by(hs_diploma) freq}
+
+{pstd}You can see the difference in the predicted values clearly, with the logistic 
+regression model truncating the predictions to fall only between 0 and 1.
+
+{pstd}Congratulations! You've gone from exploring a new dataset to performing 
+multivariate regression in only a few short steps. The commands and the analysis 
+steps you learned here will be helpful to prepare you for diving deeper into using 
+regression for inference and prediction in your future work.
+
